@@ -40,28 +40,24 @@ entity ModuladorPWM is
 end ModuladorPWM;
 
 architecture Behavioral of ModuladorPWM is
-signal t_on : unsigned(5 downto 0) := (others => '0'); -- Cuenta el nº de flancos de reloj positivos con Vout = 1
-signal t_off : unsigned(5 downto 0) := (others => '0'); -- Cuenta el nº de flancos de reloj positivos con Vout = 0
-signal t_total : unsigned(6 downto 0) := (others => '0');
+  signal t_count : unsigned(5 downto 0) := (others => '0'); -- Contador del periodo
 begin
     process(CLK)
     begin
-        --Generación de pulso PWM
-        if(rising_edge(CLK)) then
-            if t_on < UNSIGNED(D) then
-                Vout <= '1';
-                t_on <= t_on + 1;
-            elsif t_on + t_off < 64 then
-                Vout <= '0';
-                t_off <= t_off + 1;   
+        if rising_edge(CLK) then
+            -- Generación de PWM
+            if t_count < UNSIGNED(D) then
+                Vout <= '1'; -- Dentro del ciclo de trabajo
+            else
+                Vout <= '0'; -- Fuera del ciclo de trabajo
             end if;
-        end if;
-        --Reinicio de los contadores al acabar el periodo
-        t_total <= '0' & (t_on + t_off);
-        if t_total >= 64 then
-            t_on <= (others => '0');
-            t_off <= (others => '0');
-            t_total <= (others => '0');
+
+            -- Incremento del contador
+            if t_count = 63 then
+                t_count <= (others => '0'); -- Reinicia el contador al final del periodo
+            else
+                t_count <= t_count + 1; -- Incrementa el contador
+            end if;
         end if;
     end process;
 end Behavioral;

@@ -70,7 +70,7 @@ architecture Estructural of GestorSalidas is
     
     -- Definición de señales intermedias
     signal RGB_PWM : std_logic_vector(2 downto 0); -- Señal PWM para los LED, mismo criterio que en la salida
-    signal RGB_s   : std_logic_vector(2 downto 0);
+   -- signal RGB_s   : std_logic_vector(2 downto 0);
     
     begin
     -- Señales PWM para alimentar el LED
@@ -99,7 +99,7 @@ architecture Estructural of GestorSalidas is
             Vin => RGB_PWM,
             SW_Parpadeo => SW_Parpadeo,
             CLK => CLK,
-            LED => RGB_s
+            LED => RGB
         );
         
      -- Displays del valor de color en 7 segmentos
@@ -112,6 +112,6 @@ architecture Estructural of GestorSalidas is
         );
         
      AN_EMPTY <= "11";
-     RGB <= not RGB_s;
+
            
 end Estructural;
