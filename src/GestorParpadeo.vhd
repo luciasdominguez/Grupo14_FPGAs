@@ -48,38 +48,43 @@ component DivisorFrecuencia
         F_out : integer := 2 --Hz
     );
     Port (
-        E           : in std_logic; --Enable 
         CLK_in      : in STD_LOGIC; --Reloj de entrada
         CLK_out     : out std_logic --Reloj de salida
     );
 end component;
 
 signal clk_parpadeo     : std_logic; --Reloj de parpadeo
-signal enable_parpadeo  : std_logic; --Enable del parpadeo
+signal encendido        : std_logic := '1';
 
 begin
 
 Divisor: DivisorFrecuencia
+    generic map(
+        F_in  => 100000000, --Hz
+        F_out => 2 --Hz
+    )
     port map(
-        E => enable_parpadeo,
         CLK_in => CLK,
         CLK_out => clk_parpadeo
     );
 
-process(CLK)
+process(clk_parpadeo)
 begin
-    if (rising_edge(CLK)) then
-        if(SW_Parpadeo = '1') then
-            enable_parpadeo <= '1';
-            if(clk_parpadeo = '1') then
-                LED <= Vin;
+    if (rising_edge(clk_parpadeo)) then
+        encendido <= not encendido;
+    end if;
+    
+    if(SW_Parpadeo = '1') then
+        if (rising_edge(clk_parpadeo)) then
+            if(encendido = '1') then
+                LED <= Vin;     
             else
                 LED <= "000";
             end if;
-        else
-            enable_parpadeo <= '0';
-            LED <= Vin;
         end if;
+    else
+        LED <= Vin;
     end if;
+    
 end process;
 end Behavioral;

@@ -37,9 +37,10 @@ entity GestorSalidas is
            SW_Parpadeo    : in STD_LOGIC;                       -- Switch que controla el parpadeo de los led
            RGB            : out STD_LOGIC_VECTOR (2 downto 0);  -- 1 LED RGB
                                                                 -- R = bit 0, G = bit 1, B = bit 2
-           DISP_R         : out STD_LOGIC_VECTOR (13 downto 0); -- Dos displays 7 segmentos
-           DISP_G         : out STD_LOGIC_VECTOR (13 downto 0); -- Dos displays 7 segmentos
-           DISP_B         : out STD_LOGIC_VECTOR (13 downto 0)  -- Dos displays 7 segmentos
+           DISP           : out STD_LOGIC_VECTOR (6 downto 0);  -- Numero Display 7 segmentos
+           
+           AN_DISP        : out STD_LOGIC_VECTOR (5 downto 0);   -- Ánodo del Display a usar
+           AN_EMPTY       : out STD_LOGIC_VECTOR (1 downto 0)   --Anodo de Displays sin usar
            );
 end GestorSalidas;
 
@@ -60,13 +61,16 @@ architecture Estructural of GestorSalidas is
     end component;
     
     component GestionSieteSegmentos is
-        Port ( BIN : in STD_LOGIC_VECTOR (5 downto 0);
+        Port ( BIN : in STD_LOGIC_VECTOR (17 downto 0);
                CLK : in STD_LOGIC;
-               DISP : out STD_LOGIC_VECTOR (13 downto 0));
+               DISP : out STD_LOGIC_VECTOR (6 downto 0);
+               ENABLE   : out STD_LOGIC_VECTOR (5 downto 0)
+               );
     end component;
     
     -- Definición de señales intermedias
     signal RGB_PWM : std_logic_vector(2 downto 0); -- Señal PWM para los LED, mismo criterio que en la salida
+   -- signal RGB_s   : std_logic_vector(2 downto 0);
     
     begin
     -- Señales PWM para alimentar el LED
@@ -99,22 +103,15 @@ architecture Estructural of GestorSalidas is
         );
         
      -- Displays del valor de color en 7 segmentos
-     Display_r : GestionSieteSegmentos
+     Display : GestionSieteSegmentos
         port map(
-            BIN => LED_in(5 downto 0),
+            BIN => LED_in,
             CLK => CLK,
-            DISP => DISP_R
+            DISP => DISP,
+            ENABLE => AN_DISP
         );
-     Display_g : GestionSieteSegmentos
-        port map(
-            BIN => LED_in(11 downto 6),
-            CLK => CLK,
-            DISP => DISP_G
-        );
-     Display_b : GestionSieteSegmentos
-        port map(
-            BIN => LED_in(17 downto 12),
-            CLK => CLK,
-            DISP => DISP_B
-        );              
+        
+     AN_EMPTY <= "11";
+
+           
 end Estructural;
