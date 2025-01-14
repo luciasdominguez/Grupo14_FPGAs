@@ -59,7 +59,6 @@ architecture Behavioral of GestionSieteSegmentos is
             F_out : integer := 2 --Hz
         );
         Port ( 
-            E           : in std_logic; --Enable
             CLK_in      : in STD_LOGIC; --Reloj de entrada
             CLK_out     : out std_logic --Reloj de salida
         ); 
@@ -90,7 +89,6 @@ architecture Behavioral of GestionSieteSegmentos is
             F_out => 1000 --Hz
         )
         port map(
-            E => '1',
             CLK_in => CLK,
             CLK_out => CLK_1KHZ
         );
