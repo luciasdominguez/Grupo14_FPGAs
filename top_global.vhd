@@ -15,7 +15,7 @@ entity top_entity_global is
     );
 end top_entity_global;
 
-architecture Behavioral of gestor_entradas is
+architecture Behavioral of top_entity_global is
     component gestor_entradas is
         Port (
             CLK        : in STD_LOGIC;                      -- Reloj global
@@ -84,7 +84,7 @@ begin
     Gestor_Salidas_top: GestorSalidas
         Port map( 
             CLK           =>    CLK,
-            LED_in        =>    rbg_out,
+            LED_in        =>    rgb_out,
             SW_Parpadeo   =>    parpadeo,
             RGB           =>    rgb,
             DISP          =>    disp,
