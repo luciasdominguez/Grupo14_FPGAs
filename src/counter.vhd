@@ -4,21 +4,26 @@ use IEEE.numeric_std.all;
 
 entity counter is
     Port ( 
-           CLK  : in STD_LOGIC;
-           CODE : out STD_LOGIC_VECTOR (2 downto 0)
+           CLK   : in STD_LOGIC;
+           RESET : in STD_LOGIC;
+           CODE  : out STD_LOGIC_VECTOR (2 downto 0)
          );
 end counter;
 
 architecture Behavioral of counter is
     signal count : unsigned(2 downto 0);
 begin
-    process(CLK)
+    process(CLK,RESET)
     begin
+        if(RESET = '0') then
+            count <= "000";
+        end if;
+    
         if rising_edge(CLK)then
             count <= count + 1;
         end if;
         
-        if count > "110" then 
+        if count >= "110" then 
             count <= "000";
         end if;
         

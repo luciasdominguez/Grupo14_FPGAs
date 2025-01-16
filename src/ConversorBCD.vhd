@@ -58,10 +58,10 @@ begin
             end loop;
             
             --Segunda Corrección
-             if(conversion(9 downto 6) >= "1001") then
+             if(conversion(9 downto 6) > "1001") then
                     conversion(13 downto 6) := std_logic_vector(unsigned(conversion(13 downto 6))+"00000110");
              end if;
-             if(conversion(13 downto 10) >= "1001") then 
+             if(conversion(13 downto 10) > "1001") then 
                     conversion(13 downto 10) := std_logic_vector(unsigned(conversion(13 downto 10))+"0110");
              end if;
              
