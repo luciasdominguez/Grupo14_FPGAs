@@ -1,0 +1,97 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity detector_flanco_tb is
+end detector_flanco_tb;
+
+architecture TB of detector_flanco_tb is
+    -- Instancia del componente a testear
+    component detector_flanco is
+        port (
+            CLK     : in  std_logic;
+            RST     : in  std_logic;
+            SYNC_IN : in  std_logic_vector(7 downto 0);
+            EDGE    : out std_logic_vector(7 downto 0)
+        );
+    end component detector_flanco;
+
+    -- Inputs
+    signal clk       : std_logic := '0';
+    signal rst       : std_logic := '0';
+    signal sync_in   : std_logic_vector(7 downto 0) := (others => '0');
+
+    -- Outputs
+    signal edge      : std_logic_vector(7 downto 0);
+
+    -- Declaración del periodo de reloj
+    constant CLK_PERIOD : time := 10 ns;
+
+begin
+    -- Instancia del detector de flancos
+    uut: detector_flanco
+        port map (
+            CLK     => clk,
+            RST     => rst,
+            SYNC_IN => sync_in,
+            EDGE    => edge
+        );
+
+    -- Generación del reloj
+    clk_process: process
+    begin
+        while true loop
+            clk <= '0';
+            wait for CLK_PERIOD / 2;
+            clk <= '1';
+            wait for CLK_PERIOD / 2;
+        end loop;
+    end process;
+
+    -- Proceso de estímulos
+    stim_process: process
+    begin
+        -- Inicialización
+        rst <= '1';
+        sync_in <= (others => '0');
+        wait for 2 * CLK_PERIOD;
+
+        -- Liberar reset
+        rst <= '0';
+        wait for CLK_PERIOD;
+
+        -- Generar flanco positivo en botones (bits 4 downto 0)
+        sync_in(4 downto 0) <= "00011";
+        wait for CLK_PERIOD;
+
+        -- Mantener valores estables
+        wait for CLK_PERIOD;
+
+        -- Generar flanco positivo en switches (bits 7 downto 5)
+        sync_in(7 downto 5) <= "101";
+        wait for CLK_PERIOD;
+
+        -- Generar otro flanco positivo en botones
+        sync_in(4 downto 0) <= "11111";
+        wait for CLK_PERIOD;
+        
+        -- Generar flanco negativo en switches (bits 7 downto 5)
+        sync_in(7 downto 5) <= "000";
+        wait for CLK_PERIOD;
+        
+        -- Generar flanco negativo en botones (bits 4 downto 0)
+        sync_in(4 downto 0) <= "00000";
+        wait for CLK_PERIOD;
+
+        -- Mantener señales estables
+        wait for 3 * CLK_PERIOD;
+
+        -- Fin de la simulación
+        wait for 5 * CLK_PERIOD;
+        assert false
+            report "[PASSED]: Simulation finished"
+            severity failure;
+    end process;
+
+end architecture TB;
