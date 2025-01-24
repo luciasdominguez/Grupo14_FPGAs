@@ -55,10 +55,11 @@ architecture Behavioral of GestionSieteSegmentos is
     
     component DivisorFrecuencia is 
         generic(
-            F_in : integer := 100000000; --Hz
-            F_out : integer := 2 --Hz
+            F_in : integer := 1000000000; --dHz
+            F_out : integer := 20 --dHz
         );
         Port ( 
+            E           : in std_logic; --Enable
             CLK_in      : in STD_LOGIC; --Reloj de entrada
             CLK_out     : out std_logic --Reloj de salida
         ); 
@@ -67,6 +68,7 @@ architecture Behavioral of GestionSieteSegmentos is
     component counter is
         Port ( 
            CLK  : in STD_LOGIC;
+           RESET : in STD_LOGIC;
            CODE : out STD_LOGIC_VECTOR (2 downto 0)
          );
     end component;
@@ -85,10 +87,11 @@ architecture Behavioral of GestionSieteSegmentos is
     
     Frecuencia : DivisorFrecuencia
         generic map(
-            F_in => 100000000, --Hz
-            F_out => 1000 --Hz
+            F_in => 1000000000, --dHz
+            F_out => 10000 --dHz
         )
         port map(
+            E => '1',
             CLK_in => CLK,
             CLK_out => CLK_1KHZ
         );
@@ -123,6 +126,7 @@ architecture Behavioral of GestionSieteSegmentos is
     c : counter
         port map(
             CLK => CLK_1KHZ,
+            RESET => '1',
             CODE => count
         );
         
