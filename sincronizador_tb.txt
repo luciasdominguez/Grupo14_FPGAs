@@ -1,0 +1,78 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity sincronizador_tb is
+end sincronizador_tb;
+
+architecture TB of sincronizador_tb is
+	-- Instancia del componente a testear
+    component sincronizador is
+        port (
+            CLK       : in  std_logic;
+            RST       : in  std_logic;
+            ASYNC_IN  : in  std_logic_vector(7 downto 0);
+            SYNC_OUT  : out std_logic_vector(7 downto 0)
+        );
+    end component sincronizador;
+    
+	-- Inputs
+    signal clk       : std_logic := '0';
+    signal rst       : std_logic := '0';
+    signal async_in  : std_logic_vector(7 downto 0) := (others => '0');
+    
+    -- Outputs
+    signal sync_out  : std_logic_vector(7 downto 0);
+    
+    -- Declaración del periodo de reloj
+    constant CLK_PERIOD : time := 10 ns;
+
+begin
+    -- Instancia del sincronizador
+    uut: sincronizador
+        port map (
+            CLK       => clk,
+            RST       => rst,
+            ASYNC_IN  => async_in,
+            SYNC_OUT  => sync_out
+        );
+    
+    -- Generación del reloj
+    clk_process: process
+    begin
+        while true loop
+            clk <= '0';
+            wait for CLK_PERIOD / 2;
+            clk <= '1';
+            wait for CLK_PERIOD / 2;
+        end loop;
+    end process;
+
+    -- Proceso de estímulos
+    stim_process: process
+    begin
+        -- Inicialización
+        rst <= '1';
+        async_in <= "00000000";
+        wait for 2 * CLK_PERIOD;
+        
+        rst <= '0';
+        wait for CLK_PERIOD;
+        
+        async_in <= "10101010";
+        wait for 3 * CLK_PERIOD;
+        
+        async_in <= "11001100";
+        wait for 3 * CLK_PERIOD;
+
+        async_in <= "11110000";
+        wait for 3 * CLK_PERIOD;
+
+        wait for 5 * CLK_PERIOD;
+        assert false
+        	report "[PASSED]: Simulation finished"
+        	severity failure;
+    end process;
+
+end architecture TB;
